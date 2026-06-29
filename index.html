@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QCM Leaderboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f13;
+      --surface: #18181f;
+      --surface2: #1f1f28;
+      --surface3: #27272f;
+      --border: rgba(255,255,255,0.07);
+      --border-strong: rgba(255,255,255,0.12);
+      --text-primary: #f0f0f5;
+      --text-secondary: #9999b0;
+      --text-muted: #55556a;
+      --purple: #7f77dd;
+      --purple-light: #aeaae8;
+      --gold: #f0a840;
+      --gold-bg: rgba(240,168,64,0.12);
+      --silver: #a0a8c0;
+      --silver-bg: rgba(160,168,192,0.10);
+      --bronze: #d07048;
+      --bronze-bg: rgba(208,112,72,0.10);
+      --radius: 10px;
+      --radius-lg: 16px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+    }
+
+    .page {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      gap: 1rem;
+    }
+    .header-left h1 {
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      color: var(--text-primary);
+    }
+    .header-left p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .header-badge {
+      background: var(--gold-bg);
+      color: var(--gold);
+      border: 1px solid rgba(240,168,64,0.22);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 99px;
+      white-space: nowrap;
+      align-self: center;
+    }
+
+    /* ── Stats ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.1rem;
+    }
+    .stat-card .label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+    .stat-card .value {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .stat-card .value.accent { color: var(--purple-light); }
+
+    /* ── Podium ── */
+    .podium-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem 1.5rem 0;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    .podium-section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .podium {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 8px;
+    }
+    .podium-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      max-width: 160px;
+    }
+    .podium-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      border: 2px solid transparent;
+    }
+    .podium-avatar.gold   { background: var(--gold-bg);   color: var(--gold);   border-color: rgba(240,168,64,0.3); }
+    .podium-avatar.silver { background: var(--silver-bg); color: var(--silver); border-color: rgba(160,168,192,0.2); }
+    .podium-avatar.bronze { background: var(--bronze-bg); color: var(--bronze); border-color: rgba(208,112,72,0.2); }
+    .podium-name  { font-size: 13px; font-weight: 500; color: var(--text-primary); text-align: center; }
+    .podium-score { font-size: 12px; color: var(--text-muted); }
+    .podium-block {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      border-radius: 8px 8px 0 0;
+    }
+    .podium-block.gold   { height: 90px;  background: linear-gradient(180deg, rgba(240,168,64,0.18), rgba(240,168,64,0.06)); border: 1px solid rgba(240,168,64,0.2); border-bottom: none; }
+    .podium-block.silver { height: 64px;  background: linear-gradient(180deg, rgba(160,168,192,0.12), rgba(160,168,192,0.04)); border: 1px solid rgba(160,168,192,0.14); border-bottom: none; }
+    .podium-block.bronze { height: 46px;  background: linear-gradient(180deg, rgba(208,112,72,0.12), rgba(208,112,72,0.04)); border: 1px solid rgba(208,112,72,0.14); border-bottom: none; }
+
+    /* ── Filters ── */
+    .filters {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 99px;
+      border: 1px solid var(--border-strong);
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .filter-btn:hover { background: var(--surface); color: var(--text-primary); }
+    .filter-btn.active {
+      background: rgba(127,119,221,0.15);
+      color: var(--purple-light);
+      border-color: rgba(127,119,221,0.35);
+    }
+
+    /* ── Search ── */
+    .search-wrap {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+    .search-wrap svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      padding: 10px 12px 10px 38px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .search-input::placeholder { color: var(--text-muted); }
+    .search-input:focus { border-color: rgba(127,119,221,0.5); }
+
+    /* ── Table ── */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .table-head {
+      display: grid;
+      grid-template-columns: 50px 1fr 90px 90px 90px;
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid var(--border-strong);
+      background: var(--surface2);
+    }
+    .table-head span {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .table-head span:not(:first-child) { text-align: right; }
+    .table-head span:nth-child(2) { text-align: left; }
+
+    .table-row {
+      display: grid;
+      grid-template-columns: 50px 1fr 90px 90px 90px;
+      align-items: center;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border);
+      gap: 6px;
+      transition: background 0.1s;
+    }
+    .table-row:last-child { border-bottom: none; }
+    .table-row:hover { background: var(--surface2); }
+    .table-row.rank-1 { background: rgba(240,168,64,0.04); }
+    .table-row.rank-1:hover { background: rgba(240,168,64,0.08); }
+
+    .rank-badge {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .rank-badge.r1 { background: var(--gold-bg);   color: var(--gold); }
+    .rank-badge.r2 { background: var(--silver-bg); color: var(--silver); }
+    .rank-badge.r3 { background: var(--bronze-bg); color: var(--bronze); }
+    .rank-badge.rn { background: var(--surface3);  color: var(--text-muted); font-size: 12px; border: 1px solid var(--border); }
+
+    .player-cell { display: flex; align-items: center; gap: 10px; }
+    .player-av {
+      width: 34px; height: 34px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 600; flex-shrink: 0;
+    }
+    .player-name { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+    .player-sub  { font-size: 11px; color: var(--text-muted); }
+
+    .badge-new {
+      display: inline-block;
+      font-size: 10px;
+      background: rgba(29,158,117,0.15);
+      color: #5dcaa5;
+      border-radius: 99px;
+      padding: 2px 7px;
+      font-weight: 500;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .cell-score {
+      text-align: right;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .cell-correct {
+      text-align: right;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .acc-cell {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    .acc-bar-bg {
+      width: 44px;
+      height: 5px;
+      background: var(--surface3);
+      border-radius: 99px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .acc-bar { height: 100%; border-radius: 99px; }
+    .acc-text { font-size: 13px; color: var(--text-secondary); min-width: 34px; text-align: right; }
+
+    /* ── Empty state ── */
+    .empty {
+      padding: 3rem 1rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+
+
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 7px; }
+      .stat-card .value { font-size: 18px; }
+      .table-head,
+      .table-row { grid-template-columns: 42px 1fr 70px 60px 72px; padding: 0.7rem 0.75rem; }
+      .player-av { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h1>QCM Leaderboard</h1>
+      <p id="subtitle">Season 1 · updated just now</p>
+    </div>
+
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="label">Participants</div>
+      <div class="value" id="stat-count">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Average score</div>
+      <div class="value accent" id="stat-avg">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Top score</div>
+      <div class="value" id="stat-top">—</div>
+    </div>
+  </div>
+
+  <!-- Podium -->
+  <div class="podium-section">
+    <div class="podium-section-label">Top 3</div>
+    <div class="podium" id="podium"></div>
+  </div>
+
+  <!-- Filters + Search -->
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="top5">Top 5</button>
+    <button class="filter-btn" data-filter="above50">Above 50%</button>
+  </div>
+  <div class="search-wrap">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input class="search-input" id="search" type="text" placeholder="Search player…" oninput="render()"/>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <div class="table-head">
+      <span>#</span>
+      <span>Player</span>
+      <span>Score</span>
+      <span>Correct</span>
+      <span>Accuracy</span>
+    </div>
+    <div id="rows"></div>
+  </div>
+
+</div>
+
+
+
+<script>
+  const AVATAR_COLORS = [
+    ["#27213d","#aeaae8"],["#04342c","#5dcaa5"],["#4a1b0c","#f09977"],
+    ["#412402","#ef9f27"],["#042c53","#85b7eb"],["#173404","#97c459"],
+    ["#4b1528","#ed93b1"],["#2c2c2a","#b4b2a9"],["#26215c","#7f77dd"],
+    ["#083030","#5dcaa5"]
+  ];
+  const BAR_COLORS = ["#7f77dd","#1d9e75","#d85a30","#ef9f27","#378add","#639922","#d4537e","#888780","#aeaae8","#5dcaa5"];
+
+  let players = [
+    { name:"Ilias",   score:0, correct:0, total:50, isNew:false },
+    { name:"Test",score:0, correct:0, total:0, isNew:false },
+    { name:"Test1",score:0, correct:0, total:0, isNew:false },
+    
+  ];
+
+  let currentFilter = "all";
+
+  // filter buttons
+  document.getElementById("filters").addEventListener("click", e => {
+    if (!e.target.dataset.filter) return;
+    currentFilter = e.target.dataset.filter;
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    e.target.classList.add("active");
+    render();
+  });
+
+  function initials(name) {
+    return name.split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase();
+  }
+
+  function getColor(idx) { return AVATAR_COLORS[idx % AVATAR_COLORS.length]; }
+  function getBarColor(idx) { return BAR_COLORS[idx % BAR_COLORS.length]; }
+
+  function filtered() {
+    const q = document.getElementById("search").value.trim().toLowerCase();
+    let data = [...players];
+    if (q) data = data.filter(p => p.name.toLowerCase().includes(q));
+    if (currentFilter === "top5") data = data.slice(0, 5);
+    if (currentFilter === "above50") data = data.filter(p => Math.round(p.correct / p.total * 100) >= 50);
+    return data;
+  }
+
+  function render() {
+    const data = filtered();
+    const maxScore = players[0]?.score || 1;
+
+    // stats
+    document.getElementById("stat-count").textContent = players.length;
+    const avg = players.length ? Math.round(players.reduce((s,p) => s + p.score, 0) / players.length) : 0;
+    document.getElementById("stat-avg").textContent = avg + " pts";
+    document.getElementById("stat-top").textContent = (players[0]?.score ?? 0) + " pts";
+
+    // podium
+    const top3 = players.slice(0, 3);
+    const order = [top3[1], top3[0], top3[2]].filter(Boolean);
+    const types = ["silver","gold","bronze"];
+    const medals = ["🥈","🥇","🥉"];
+    const globalIdxMap = Object.fromEntries(players.map((p,i) => [p.name, i]));
+    document.getElementById("podium").innerHTML = order.map((p, i) => {
+      const gi = globalIdxMap[p.name];
+      const [bg, fg] = getColor(gi);
+      return `
+        <div class="podium-item">
+          <div class="podium-avatar ${types[i]}" style="background:${bg};color:${fg}">${initials(p.name)}</div>
+          <div class="podium-name">${p.name.split(" ")[0]}</div>
+          <div class="podium-score">${p.score} pts</div>
+          <div class="podium-block ${types[i]}">${medals[i]}</div>
+        </div>`;
+    }).join("");
+
+    // rows
+    const rowsEl = document.getElementById("rows");
+    if (!data.length) {
+      rowsEl.innerHTML = `<div class="empty">No players match your search.</div>`;
+      return;
+    }
+    rowsEl.innerHTML = data.map(p => {
+      const gi = players.indexOf(p);
+      const rank = gi + 1;
+      const rankClass = rank === 1 ? "r1" : rank === 2 ? "r2" : rank === 3 ? "r3" : "rn";
+      const rowClass  = rank === 1 ? "rank-1" : "";
+      const acc = Math.round(p.correct / p.total * 100);
+      const barW = Math.round(p.score / maxScore * 100);
+      const [bg, fg] = getColor(gi);
+      const barColor = getBarColor(gi);
+      return `
+        <div class="table-row ${rowClass}">
+          <div><div class="rank-badge ${rankClass}">${rank <= 3 ? ["🥇","🥈","🥉"][rank-1] : rank}</div></div>
+          <div class="player-cell">
+            <div class="player-av" style="background:${bg};color:${fg}">${initials(p.name)}</div>
+            <div>
+              <div class="player-name">${p.name}${p.isNew ? '<span class="badge-new">new</span>' : ''}</div>
+              <div class="player-sub">${p.correct}/${p.total} correct</div>
+            </div>
+          </div>
+          <div class="cell-score">${p.score}</div>
+          <div class="cell-correct">${p.correct}/${p.total}</div>
+          <div class="acc-cell">
+            <div class="acc-bar-bg"><div class="acc-bar" style="width:${acc}%;background:${barColor}"></div></div>
+            <span class="acc-text">${acc}%</span>
+          </div>
+        </div>`;
+    }).join("");
+  }
+
+
+
+  // subtitle live clock
+  function updateSubtitle() {
+    const now = new Date();
+    document.getElementById("subtitle").textContent =
+      `Season 1 · ${now.toLocaleDateString("en-GB", {day:"numeric",month:"short",year:"numeric"})}`;
+  }
+
+  updateSubtitle();
+  render();
+</script>
+</body>
+</html>
