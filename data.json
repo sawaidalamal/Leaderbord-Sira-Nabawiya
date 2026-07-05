@@ -16,7 +16,7 @@
       "id": 2,
       "name": "Mossaab",
       "quizScores": [
-        { "quizName": "QCM1", "score": 0 }
+        { "quizName": "QCM1", "score": 22 }
        
       ]
     },
@@ -37,7 +37,7 @@
       "id": 4,
       "name": "Moul QCM",
       "quizScores": [
-        { "quizName": "QCM1", "score": 30 }
+        { "quizName": "QCM1", "score": 31 }
         
       ]
     },
