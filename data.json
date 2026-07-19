@@ -33,18 +33,11 @@
 
 
 
-    {
-      "id": 4,
-      "name": "Moul QCM",
-      "quizScores": [
-        { "quizName": "QCM1", "score": 31 }
-        
-      ]
-    },
+   
 
 
      {
-      "id": 5,
+      "id": 4,
       "name": "Malika",
       "quizScores": [
         { "quizName": "QCM1", "score": 27 }
