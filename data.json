@@ -16,7 +16,8 @@
       "id": 2,
       "name": "Mossaab",
       "quizScores": [
-        { "quizName": "QCM1", "score": 22 }
+        { "quizName": "QCM1", "score": 22 },
+         { "quizName": "QCM2", "score": 39 }
        
       ]
     },
@@ -41,6 +42,15 @@
       "name": "Malika",
       "quizScores": [
         { "quizName": "QCM1", "score": 27 }
+        
+      ]
+    },
+
+    {
+      "id": 5,
+      "name": "Ib",
+      "quizScores": [
+        { "quizName": "QCM2", "score": 18 }
         
       ]
     }
